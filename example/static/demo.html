@@ -1,0 +1,247 @@
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <script src="https://unpkg.com/vue@next"></script>
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
+  <title>PAY-SDK-DEMO</title>
+</head>
+<body>
+<div id="app">
+  <el-card>
+    <el-collapse accordion model-value="create">
+      <el-collapse-item title="创建订单" name="create">
+        <el-container v-loading="createLoading">
+          <el-aside width="500px">
+            <el-form
+              ref="createFormRef"
+              :model="createForm"
+              :rules="createRules"
+              label-width="140px"
+            >
+              <el-form-item label="订单金额" prop="amount">
+                <el-input v-model.number="createForm.amount" type="number" />
+              </el-form-item>
+              <el-form-item label="商户订单id" prop="merchant_order_id">
+                <el-input
+                  v-model="createForm.merchant_order_id"
+                  placeholder="请输入唯一的商户订单id"
+                />
+              </el-form-item>
+              <el-form-item label="备注信息" prop="note">
+                <el-input v-model="createForm.note" placeholder="非必填" />
+              </el-form-item>
+              <el-form-item label="成功回调地址" prop="redirect_url">
+                <el-input v-model="createForm.redirect_url" placeholder="非必填" />
+              </el-form-item>
+              <el-form-item label="失败回调地址" prop="redirect_url_fail">
+                <el-input v-model="createForm.redirect_url_fail" placeholder="非必填" />
+              </el-form-item>
+              <el-form-item label="provider" prop="provider">
+                <el-input v-model="createForm.provider" placeholder="非必填" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="createFormRef.resetFields()">重置</el-button>
+                <el-button type="primary" @click="createSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="createResult">
+              <div>response:</div>
+              <pre>{{ createResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="查询订单" name="query">
+        <el-container v-loading="queryLoading">
+          <el-aside width="500px">
+            <el-form ref="queryFormRef" :model="queryForm" :rules="queryRules" label-width="140px">
+              <el-form-item label="商户订单id" prop="order_id">
+                <el-input v-model="queryForm.order_id" placeholder="请输入唯一的商户订单id" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="queryFormRef.resetFields()">重置</el-button>
+                <el-button type="primary" @click="querySubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="queryResult">
+              <div>response:</div>
+              <pre>{{ queryResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="发起退款" name="refund">
+        <el-container v-loading="refundLoading">
+          <el-aside width="500px">
+            <el-form
+              ref="refundFormRef"
+              :model="refundForm"
+              :rules="refundRules"
+              label-width="140px"
+            >
+              <el-form-item label="商户订单id" prop="order_id">
+                <el-input v-model="refundForm.order_id" placeholder="请输入唯一的商户订单id" />
+              </el-form-item>
+              <el-form-item label="退款金额" prop="refund_amount">
+                <el-input v-model.number="refundForm.refund_amount" type="number" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="refundFormRef.resetFields()">重置</el-button>
+                <el-button type="primary" @click="refundSubmit">提交</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="queryResult">
+              <div>response:</div>
+              <pre>{{ queryResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <!--<el-collapse-item title="取消订单" name="4">
+      </el-collapse-item>-->
+    </el-collapse>
+  </el-card>
+</div>
+
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+
+  const { reactive, toRefs, createApp } = Vue;
+
+  function parseData(data) {
+    data = JSON.parse(JSON.stringify(data))
+    Object.entries(data).forEach(([key, value]) => {
+      if (!value) {
+        delete data[key]
+      }
+    })
+    return data
+  }
+
+  async function onResponse(response) {
+    if (response.data.code === 1) {
+      return response.data.data
+    } else {
+      alert(response.data.message)
+      return Promise.reject(response.data)
+    }
+  }
+
+  // 创建订单表单
+  function useCreateForm() {
+    const state = reactive({
+      createFormRef: null,
+      createLoading: false,
+      createForm: {
+        amount: 1,
+        merchant_order_id: '',
+        note: '',
+        redirect_url: '',
+        redirect_url_fail: '',
+        provider: ''
+      },
+      createRules: {
+        amount: [{ required: true, type: 'number' }],
+        merchant_order_id: [{ required: true, type: 'string' }]
+      },
+      createResult: null,
+      createSubmit() {
+        state.createLoading = true
+        submit().finally(() => (state.createLoading = false))
+      }
+    })
+
+    async function submit() {
+      await state.createFormRef.validate()
+      state.createResult = await onResponse(
+        await axios.post('/api/orderCreate', parseData(state.createForm))
+      )
+    }
+
+    return state
+  }
+
+  // 查询订单
+  function useQueryForm() {
+    const state = reactive({
+      queryFormRef: null,
+      queryLoading: false,
+      queryForm: {
+        order_id: ''
+      },
+      queryRules: {
+        order_id: [{ required: true, type: 'string' }]
+      },
+      queryResult: null,
+      querySubmit() {
+        state.queryLoading = true
+        submit().finally(() => (state.queryLoading = false))
+      }
+    })
+
+    async function submit() {
+      await state.queryFormRef.validate()
+      state.queryResult = await onResponse(
+        await axios.post('/api/orderQuery', parseData(state.queryForm))
+      )
+    }
+
+    return state
+  }
+
+  // 订单退款
+  function useRefundForm() {
+    const state = reactive({
+      refundFormRef: null,
+      refundLoading: false,
+      refundForm: {
+        order_id: '',
+        refund_amount: 0.01
+      },
+      refundRules: {
+        order_id: [{ required: true, type: 'string' }],
+        refund_amount: [{ required: true, type: 'number' }]
+      },
+      refundResult: null,
+      refundSubmit() {
+        state.refundLoading = true
+        submit().finally(() => (state.refundLoading = false))
+      }
+    })
+
+    async function submit() {
+      await state.refundFormRef.validate()
+      state.refundResult = await onResponse(
+        await axios.post('/api/orderRefund', parseData(state.refundForm))
+      )
+    }
+
+    return state
+  }
+
+
+  createApp({
+    setup() {
+      return {
+        ...toRefs(useCreateForm()),
+        ...toRefs(useQueryForm()),
+        ...toRefs(useRefundForm())
+      }
+    }
+  })
+    .use(ElementPlus)
+    .mount("#app");
+</script>
+
+</body>
+</html>

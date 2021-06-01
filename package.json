@@ -3,9 +3,20 @@
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "serve-example": "node example/server.js"
+  },
   "dependencies": {
-    "@types/node": "^15.6.1",
     "axios": "^0.21.1",
     "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^15.6.1",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-cors": "^0.0.16",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
+    "koa2-connect-history-api-fallback": "^0.1.3"
   }
 }
