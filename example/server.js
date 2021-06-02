@@ -7,8 +7,7 @@ const koaBody = require('koa-body')
 const PaySDK = require('../index')
 
 // 配置信息
-const { token, host } = require('./setting.json')
-const port = 3001
+const { token, host, port } = require('./setting.json')
 const $redirect_url = "http://www.baidu.com"
 const $redirect_url_fail = "http://www.baidu.com"
 
