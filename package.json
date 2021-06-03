@@ -1,11 +1,12 @@
 {
-  "name": "pay-sdk",
+  "name": "ksher-payment",
   "version": "0.0.1",
   "main": "index.js",
   "license": "MIT",
   "scripts": {
     "serve-example": "node example/server.js"
   },
+  "homepage": "https://github.com/ksher-solutions/payment_sdk",
   "dependencies": {
     "axios": "^0.21.1",
     "crypto": "^1.0.1"
@@ -18,5 +19,17 @@
     "koa-router": "^10.0.0",
     "koa-static": "^5.0.0",
     "koa2-connect-history-api-fallback": "^0.1.3"
+  },
+  "description": "The Payment SDK for accessing *.vip.ksher.net",
+  "directories": {
+    "example": "example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ksher-solutions/payment_sdk.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/ksher-solutions/payment_sdk/issues"
   }
 }
