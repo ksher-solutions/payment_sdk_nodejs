@@ -1,5 +1,7 @@
 {
-  "host": "https://mini-sistic.demoshop.ksher.net",
-  "token": "459ab3b636db73e363fe8766fa7dec1ea6bb93f43d9629eb28add6047abdeb4a",
+  "host": "https://sistic.vip.ksher.net",
+  "token": "186d6c953c90f39c2973e6dd2e110d4057194996ef08fb4b3338180517b509c7",
+  "mp_alipay_appid": "2019052965362722",
+  "mp_alipay_openid": "2088412398874611",
   "port": 3000
 }

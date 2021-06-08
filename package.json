@@ -1,7 +1,7 @@
 {
   "name": "ksher-payment",
-  "version": "0.0.1",
-  "main": "index.js",
+  "version": "0.0.2",
+  "main": "src/redirect.js",
   "license": "MIT",
   "scripts": {
     "serve-example": "node example/server.js"

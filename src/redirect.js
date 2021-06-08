@@ -1,7 +1,18 @@
-// 输出 SDK class 接受 token 和 根域名
-const crypto = require('crypto');
+/**
+ * 网站支付SDK
+ */
+
+  // 输出 SDK class 接受 token 和 根域名
 const axios = require('axios')
 
+const { getSignature } = require('./utils.js')
+
+/**
+ * 网站支付, 支付宝webview可用的SDK
+ *
+ * 给定 token 及商户域名
+ * 返回SDK实例, 可进行创建查询等订单操作
+ */
 class PaySDK {
   static VERSION = '0.0.1'
 
@@ -15,41 +26,7 @@ class PaySDK {
     this.host = host
   }
 
-  /**
-   * 获取签名
-   * @param {string} apiUrl   - 要请求的接口地址(相对网站域名的相对路径)
-   * @param {Object} data     - 请求参数(不包含 signature)
-   * @return string           - 加密后的签名串
-   */
-  getSignature(apiUrl, data) {
-    const obj = {}
-
-    // 1 将请求参数按key值从小到大排序
-    Object.keys(data).sort().forEach(key => {
-      if (key !== 'signature')
-        obj[key] = data[key]
-    })
-
-    // 2 将排序后的keyvalue拼接起来
-    const keyvalue = Object.entries(obj).map(([key, value]) => key + value).join('')
-
-    // 3 将上面得到的字符串前面再拼接API的URL
-    const parameterStr = apiUrl + keyvalue
-
-    // 4, 将拼接好的字符串用 UTF-8 编码后做 HMAC-SHA256摘要
-    let result = crypto.createHmac('sha256', this.token)
-      .update(parameterStr, 'utf8')
-      // 5, 将得到的摘要做 HEXDECIMAL 编码, 得到签名值
-      .digest('hex')
-      .toUpperCase()
-
-    console.log({
-      parameterStr,
-      result
-    });
-
-    return result
-  }
+  getSignature = getSignature
 
   /**
    * 创建订单
@@ -124,7 +101,7 @@ class PaySDK {
    * @param {string} [data.mid]
    * @param {string} [data.provider]        - 国家或地区
    */
-  orderCancel(order_id, data){
+  orderCancel(order_id, data) {
     const url = `${ PaySDK.API }/${ order_id }`
 
     return axios({

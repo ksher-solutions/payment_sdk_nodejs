@@ -1,4 +1,4 @@
-const PaySDK = require('../index')
+const PaySDK = require('../src/redirect')
 
 const { token, host } = require('./setting.json')
 
