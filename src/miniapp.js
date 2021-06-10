@@ -69,15 +69,16 @@ class PaySDK {
 
   /**
    * 退款订单
+   * @param {string} order_id               - 要退款的商户订单id
    * @param data
    * @param {number} data.refund_amount     - 要退款的金额
    * @param {string} data.timestamp         - 时间戳
-   * @param {string} data.refund_order_id   - 要退款的商户订单id
+   * @param {string} data.refund_order_id   - 退款id
    * @param {string} [data.mid]
    * @param {string} [data.provider]        - 国家或地区
    */
-  orderRefund(data) {
-    const url = `${ PaySDK.API }/${ data.refund_order_id }`
+  orderRefund(order_id, data) {
+    const url = `${ PaySDK.API }/${ order_id }`
 
     return axios({
       url: this.host + url,

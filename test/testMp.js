@@ -1,20 +1,23 @@
 const PaySDK = require('../src/miniapp')
 
-const { token, host, mp_alipay_appid, mp_alipay_openid } = require('./setting.json')
+const {
+  token,
+  host,
+  mp_alipay_appid,
+  mp_alipay_openid,
+  mp_wechat_openid,
+  mp_wechat_appid
+} = require('./setting.json')
 
 const sdk = new PaySDK({ token, host });
 
+// 测试微信订单
 ;(() => {
 
   const order_id = getTime();
 
-  testCreateOrder(100, order_id)
-
   // 测试创建订单
-  testCreateOrder(100, order_id).then(() => {
-    // 测试订单退款
-    testOrderRefund(order_id, 10).then(() => {
-    })
+  testCreateWXOrder(100, order_id).then(() =>
     // 测试查询订单
     testQueryOrder(order_id).then(() => {
       // 测试订单退款
@@ -25,9 +28,33 @@ const sdk = new PaySDK({ token, host });
       // testOrderCancel(order_id).then(() => {
       // })
     })
-  })
-})()
+  )
 
+})()
+if (!1) {
+
+  ;(() => {
+    const order_id = getTime();
+
+    // 测试创建订单
+    testCreateOrder(100, order_id).then(() => {
+      // 测试订单退款
+      testOrderRefund(order_id, 10).then(() => {
+      })
+      // 测试查询订单
+      testQueryOrder(order_id).then(() => {
+        // 测试订单退款
+        testOrderRefund(order_id, 10).then(() => {
+        })
+
+        // 测试取消订单
+        // testOrderCancel(order_id).then(() => {
+        // })
+      })
+    })
+  })()
+
+}
 
 // 获取时间戳
 function getTime() {
@@ -58,6 +85,36 @@ async function testCreateOrder(amount, order_id = getTime()) {
 
   }).catch(err => {
     console.log('------------------创建订单失败!!!-----------------------');
+    console.log(err);
+    console.log('');
+    return Promise.reject()
+  })
+}
+
+// 测试创建订单
+async function testCreateWXOrder(amount, order_id = getTime()) {
+  console.log('');
+  console.log(`------------------测试创建微信订单-----------------------`);
+
+  const data = {
+    "amount": amount,
+    "merchant_order_id": order_id,
+    "note": "some note for this order",
+    "timestamp": getTime(),
+    "channel": "wechat",
+    "miniapp_openid": mp_wechat_openid,
+    "miniapp_appid": mp_wechat_appid,
+  }
+
+  console.log(data);
+
+  return sdk.orderCreate(data).then(res => {
+    console.log('------------------创建微信订单成功!-----------------------');
+    console.log(res.data);
+    console.log('');
+
+  }).catch(err => {
+    console.log('------------------创建微信订单失败!!!-----------------------');
     console.log(err);
     console.log('');
     return Promise.reject()
