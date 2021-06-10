@@ -81,7 +81,7 @@ class PaySDK {
    * @param {string} [data.provider]        - 国家或地区
    */
   orderRefund(order_id, data) {
-    const url = `${ PaySDK.API }/${ data.order_id }`
+    const url = `${ PaySDK.API }/${ order_id }`
 
     return axios({
       url: this.host + url,
