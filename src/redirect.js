@@ -5,7 +5,7 @@
   // 输出 SDK class 接受 token 和 根域名
 const axios = require('axios')
 
-const { getSignature } = require('./utils.js')
+const SDK = require('./sdk')
 
 /**
  * 网站支付, 支付宝webview可用的SDK
@@ -13,20 +13,17 @@ const { getSignature } = require('./utils.js')
  * 给定 token 及商户域名
  * 返回SDK实例, 可进行创建查询等订单操作
  */
-class PaySDK {
+class PaySDK extends SDK{
   static VERSION = '0.0.1'
 
   static API = '/api/v1/redirect/orders'
 
   host = ''
-  token = ''
 
-  constructor({ token, host }) {
-    this.token = token
-    this.host = host
+  constructor(props) {
+    super(props)
+    this.host = props.host
   }
-
-  getSignature = getSignature
 
   /**
    * 创建订单
