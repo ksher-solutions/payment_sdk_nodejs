@@ -28,13 +28,13 @@ class PaySDK extends SDK{
   /**
    * 创建订单
    * @param {Object} data
-   * @param {number} data.amount                - 订单金额
-   * @param {string} data.merchant_order_id     - 商户后台的唯一的订单id
-   * @param {string} data.note                  - 订单备注
-   * @param {string} data.redirect_url          - 成功回调地址
-   * @param {string} data.redirect_url_fail     - 失败回调地址
-   * @param {string} data.timestamp             - 时间戳
-   * @param {string} [data.provider]            - 国家或地区
+   * @param {number} data.amount                - 订单金额      - order amount
+   * @param {string} data.merchant_order_id     - 商户后台的唯一的订单id - The unique order id of the merchant's backend
+   * @param {string} data.note                  - 订单备注      - order notes
+   * @param {string} data.redirect_url          - 成功回调地址   - Successful callback address
+   * @param {string} data.redirect_url_fail     - 失败回调地址   - Failed callback address
+   * @param {string} data.timestamp             - 时间戳        - timestamp
+   * @param {string} [data.provider]            - 国家或地区     - country or region
    */
   orderCreate(data) {
     const url = `${ PaySDK.API }/`

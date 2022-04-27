@@ -1,4 +1,4 @@
-# payment_sdk
+# payment_sdk_nodejs
 The Payment SDK for accessing *.vip.ksher.net
 
 ## 1. Install

@@ -7,7 +7,7 @@ const { token, host } = require('./setting.json')
 const sdk = new PaySDK({ token, host });
 const getTime = () => '' + +new Date()
 
-describe("测试 redirect", () => {
+describe("test redirect", () => {
   const amount = 100
   const order_id = getTime()
   const note = 'some note for this order'
@@ -23,7 +23,7 @@ describe("测试 redirect", () => {
     "timestamp": timestamp,
   }
 
-  test('创建订单', async () => {
+  test('Create Order', async () => {
     const { status, data } = await sdk.orderCreate(params)
     expect(status).toBe(200)
 
@@ -35,11 +35,11 @@ describe("测试 redirect", () => {
     expect(data.error_code).toBe('SUCCESS')
     expect(data.api_name).toBe('Redirect')
 
-    console.log(chalk.bgGreen('  '), chalk.green.bold('创建订单结果'), data);
-    console.log(`支付链接: ${ chalk.green(data.reference) }`);
+    console.log(chalk.bgGreen('  '), chalk.green.bold('Create order result'), data);
+    console.log(`payment link: ${ chalk.green(data.reference) }`);
   });
 
-  test('查询订单', async () => {
+  test('checking order', async () => {
     const timestamp = getTime()
     const { status, data } = await sdk.orderQuery(order_id, { timestamp })
     expect(status).toBe(200)
@@ -48,10 +48,10 @@ describe("测试 redirect", () => {
     expect(data.timestamp).toBe(timestamp)
     expect(data.api_name).toBe('Redirect')
 
-    console.log(chalk.bgGreen('  '), chalk.green.bold('查询订单结果'), data);
+    console.log(chalk.bgGreen('  '), chalk.green.bold('Query order result'), data);
   })
 
-  test('退款订单', async () => {
+  test('refund order', async () => {
     const timestamp = getTime()
 
     const refund_amount = 100
@@ -65,7 +65,7 @@ describe("测试 redirect", () => {
     const { status, data } = await sdk.orderRefund(order_id, params)
     expect(status).toBe(200)
 
-    console.log(chalk.bgGreen('  '), chalk.green.bold('订单退款结果'), data);
+    console.log(chalk.bgGreen('  '), chalk.green.bold('Order refund result'), data);
   })
 })
 

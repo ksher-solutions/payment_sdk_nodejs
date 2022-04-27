@@ -4,24 +4,29 @@ const Router = require('koa-router')
 const koaStatic = require('koa-static')
 const cors = require('koa-cors');
 const koaBody = require('koa-body')
-const PaySDK = require('../index')
+const PaySDK = require('../src/redirect')
 
 // 配置信息
+// configuration information
 const { token, host, port } = require('./setting.json')
 const $redirect_url = "http://www.baidu.com"
 const $redirect_url_fail = "http://www.baidu.com"
 
 // 本地服务
+// local service
 const app = new Koa()
 
 // sdk 初始化
+// sdk initialization
 const ksherPaymentSDK = new PaySDK({ token, host });
 
 
 // 静态 demo
+// static demo
 app.use(koaStatic(path.join(__dirname, './static')))
 
 // cors跨域设置
+// cors domain settings
 app.use(cors());
 
 // bodyparser
@@ -34,21 +39,26 @@ app
   .use(router.allowedMethods())
 
 // 启动服务
+// start the service
 app.listen(port, async () => {
   console.log(`app started at port ${ port }`)
 });
 
 // 获取时间戳
+// get timestamp
 function getTime() {
   return (+new Date).toString()
 }
 
 // 接口路由
+// interface routing
 function getRouter() {
   // 接口
+  // interface
   const router = new Router()
 
   // 创建订单接口
+  // Create order interface
   router.post('/api/orderCreate', async (ctx, next) => {
     const {
       note = "some note for this order",
@@ -78,6 +88,7 @@ function getRouter() {
   })
 
   // 查询订单接口
+  // Query order interface
   router.post('/api/orderQuery', async (ctx, next) => {
     const {
       order_id,
@@ -100,6 +111,7 @@ function getRouter() {
   })
 
   // 订单退款接口
+  // Order refund interface
   router.post('/api/orderRefund', async (ctx, next) => {
     const { order_id, refund_amount, timestamp = getTime() } = ctx.request.body
     if (!order_id || !refund_amount) {
@@ -124,8 +136,10 @@ function getRouter() {
   })
 
   // todo 取消订单接口 暂未支持
+  // Cancel order interface Not supported yet
 
   // 成功回调
+  // success callback
   router.get('/api/redirect/success', async (ctx, next) => {
     console.log('------------------get success callback-----------------------');
     console.log(ctx.query);
@@ -135,6 +149,7 @@ function getRouter() {
   })
 
   // 失败回调
+  // failure callback
   router.get('/api/redirect/fail', async (ctx, next) => {
     console.log('------------------get fail callback-----------------------');
     console.log(ctx.query);
@@ -144,6 +159,7 @@ function getRouter() {
   })
 
   // 成功回调
+  // success callback
   router.post('/api/redirect/success', async (ctx, next) => {
     console.log('------------------post success callback-----------------------');
     console.log(ctx.query);
