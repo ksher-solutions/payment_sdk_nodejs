@@ -1,5 +1,5 @@
 {
-  "name": "ksher-payment",
+  "name": "ksher-pay",
   "version": "0.0.7",
   "main": "src/redirect.js",
   "license": "MIT",
