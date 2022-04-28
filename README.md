@@ -3,18 +3,18 @@ The Payment SDK for accessing *.vip.ksher.net
 
 ## 1. Install
 
-You can use package manager to install ksher-payment SDK.
+You can use package manager to install ksher-pay SDK.
 
 ### 1.1. npm
 
 ```shell
-npm install ksher-payment
+npm install ksher-pay
 ```
 
 ### 1.2. yarn
 
 ```shell
-yarn add ksher-payment
+yarn add ksher-pay
 ```
 
 ## 2. How to use
