@@ -4,16 +4,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <script src="https://unpkg.com/vue@next"></script>
   <!-- import CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/element-plus/lib/theme-chalk/index.css">
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
   <!-- import JavaScript -->
-  <script src="https://unpkg.com/element-plus/lib/index.full.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
   <title>PAY-SDK-DEMO</title>
 </head>
 <body>
 <div id="app">
   <el-card>
     <el-collapse accordion model-value="create">
-      <el-collapse-item title="创建订单" name="create">
+      <el-collapse-item title="Create Order (创建订单)" name="create">
         <el-container v-loading="createLoading">
           <el-aside width="500px">
             <el-form
@@ -22,30 +22,30 @@
               :rules="createRules"
               label-width="140px"
             >
-              <el-form-item label="订单金额" prop="amount">
+              <el-form-item label="amount (订单金额)" prop="amount">
                 <el-input v-model.number="createForm.amount" type="number" />
               </el-form-item>
-              <el-form-item label="商户订单id" prop="merchant_order_id">
+              <el-form-item label="Merchant order id (商户订单id)" prop="merchant_order_id">
                 <el-input
                   v-model="createForm.merchant_order_id"
-                  placeholder="请输入唯一的商户订单id"
+                  placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)"
                 />
               </el-form-item>
-              <el-form-item label="备注信息" prop="note">
-                <el-input v-model="createForm.note" placeholder="非必填" />
+              <el-form-item label="note (备注信息)" prop="note">
+                <el-input v-model="createForm.note" placeholder="Not required (非必填)" />
               </el-form-item>
-              <el-form-item label="成功回调地址" prop="redirect_url">
-                <el-input v-model="createForm.redirect_url" placeholder="非必填" />
+              <el-form-item label="redirect_url (成功回调地址)" prop="redirect_url">
+                <el-input v-model="createForm.redirect_url" placeholder="Not required (非必填)" />
               </el-form-item>
-              <el-form-item label="失败回调地址" prop="redirect_url_fail">
-                <el-input v-model="createForm.redirect_url_fail" placeholder="非必填" />
+              <el-form-item label="redirect_url_fail (失败回调地址)" prop="redirect_url_fail">
+                <el-input v-model="createForm.redirect_url_fail" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label="provider" prop="provider">
-                <el-input v-model="createForm.provider" placeholder="非必填" />
+                <el-input v-model="createForm.provider" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="createFormRef.resetFields()">重置</el-button>
-                <el-button type="primary" @click="createSubmit">提交</el-button>
+                <el-button type="danger" @click="createFormRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="createSubmit">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>
@@ -57,16 +57,16 @@
           </el-main>
         </el-container>
       </el-collapse-item>
-      <el-collapse-item title="查询订单" name="query">
+      <el-collapse-item title="query (查询订单)" name="query">
         <el-container v-loading="queryLoading">
           <el-aside width="500px">
             <el-form ref="queryFormRef" :model="queryForm" :rules="queryRules" label-width="140px">
-              <el-form-item label="商户订单id" prop="order_id">
-                <el-input v-model="queryForm.order_id" placeholder="请输入唯一的商户订单id" />
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="queryForm.order_id" placeholder="queryForm.order_id (请输入唯一的商户订单id)" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="queryFormRef.resetFields()">重置</el-button>
-                <el-button type="primary" @click="querySubmit">提交</el-button>
+                <el-button type="danger" @click="queryFormRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="querySubmit">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>
@@ -78,7 +78,7 @@
           </el-main>
         </el-container>
       </el-collapse-item>
-      <el-collapse-item title="发起退款" name="refund">
+      <el-collapse-item title="refund (发起退款)" name="refund">
         <el-container v-loading="refundLoading">
           <el-aside width="500px">
             <el-form
@@ -87,15 +87,15 @@
               :rules="refundRules"
               label-width="140px"
             >
-              <el-form-item label="商户订单id" prop="order_id">
-                <el-input v-model="refundForm.order_id" placeholder="请输入唯一的商户订单id" />
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="refundForm.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
               </el-form-item>
-              <el-form-item label="退款金额" prop="refund_amount">
+              <el-form-item label="refund_amount (退款金额)" prop="refund_amount">
                 <el-input v-model.number="refundForm.refund_amount" type="number" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="refundFormRef.resetFields()">重置</el-button>
-                <el-button type="primary" @click="refundSubmit">提交</el-button>
+                <el-button type="danger" @click="refundFormRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="refundSubmit">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>

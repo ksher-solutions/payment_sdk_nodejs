@@ -1,7 +1,64 @@
 # payment_sdk_nodejs
 The Payment SDK for accessing *.vip.ksher.net
 
-## 1. Install
+
+## Run from demo code
+
+1. Install [nodejs](https://nodejs.org) on you computer.
+2. Check your nodejs working with your computer by using
+```shell
+node -v
+```
+3. clone Ksher nodejs repository by
+```shell
+git clone https://github.com/ksher-solutions/payment_sdk_nodejs
+```
+4. cd into clone source code and Install dependencies package by
+```shell
+cd payment_sdk_nodejs
+npm install
+```
+5. Change configuration `host` and `token` by edit at path `/example/setting.json`
+```javascript
+// Please use you own host address and token...
+const setting = {
+  "host": "https://sandboxdoc.vip.ksher.net",
+  "token": "your token",
+}
+```
+6. Start server by
+```shell
+npm run serve-example
+```
+
+> **Note**
+> 
+> Demo code is base on [KOA Framework](https://koajs.com/)
+> 
+> you can learn more from https://github.com/koajs/koa
+
+7. Enter http://localhost:3000/demo.html will display demo website
+
+
+> Alterative way you can call API localhost over postman by
+>
+> POST over http://localhost:3000/api/orderCreate
+> 
+> with Request Body
+> ```json
+> {
+>             "amount": 100,
+>             "merchant_order_id": "2022063010481",
+>             "note": "string",
+>             "redirect_url": "https://web.site/pass",
+>             "redirect_url_fail": "https://web.site/fail",
+>             "timestamp": "2022051900"
+> }
+> ```
+
+## Advance Config Running Code
+
+## 1. Install only SDK
 
 You can use package manager to install ksher-pay SDK.
 
@@ -16,8 +73,6 @@ npm install ksher-pay
 ```shell
 yarn add ksher-pay
 ```
-
-## 2. How to use
 
 ### 2.1. Prepare the configuration data
 
