@@ -1,6 +1,6 @@
 {
   "name": "ksher-pay",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "main": "src/redirect.js",
   "license": "MIT",
   "scripts": {

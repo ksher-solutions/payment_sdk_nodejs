@@ -12,97 +12,192 @@
 <body>
 <div id="app">
   <el-card>
-    <el-collapse accordion model-value="create">
-      <el-collapse-item title="Create Order (创建订单)" name="create">
-        <el-container v-loading="createLoading">
+    <el-collapse accordion model-value="redirect">
+      <el-collapse-item title="Redirect Create Order (创建订单)" name="create">
+        <el-container v-loading="createLoadingRedirect">
           <el-aside width="500px">
             <el-form
-              ref="createFormRef"
-              :model="createForm"
-              :rules="createRules"
+              ref="createFormRedirectRef"
+              :model="createFormRedirect"
+              :rules="createRulesRedirect"
               label-width="140px"
             >
               <el-form-item label="amount (订单金额)" prop="amount">
-                <el-input v-model.number="createForm.amount" type="number" />
+                <el-input v-model.number="createFormRedirect.amount" type="number" min="1" />
+              </el-form-item label="How much to charge. add 00 for decimal.Example 150.50 THB amount =15050" prop="amount">
               </el-form-item>
               <el-form-item label="Merchant order id (商户订单id)" prop="merchant_order_id">
                 <el-input
-                  v-model="createForm.merchant_order_id"
+                  v-model="createFormRedirect.merchant_order_id"
                   placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)"
                 />
               </el-form-item>
               <el-form-item label="note (备注信息)" prop="note">
-                <el-input v-model="createForm.note" placeholder="Not required (非必填)" />
+                <el-input v-model="createFormRedirect.note" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label="redirect_url (成功回调地址)" prop="redirect_url">
-                <el-input v-model="createForm.redirect_url" placeholder="Not required (非必填)" />
+                <el-input v-model="createFormRedirect.redirect_url" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label="redirect_url_fail (失败回调地址)" prop="redirect_url_fail">
-                <el-input v-model="createForm.redirect_url_fail" placeholder="Not required (非必填)" />
-              </el-form-item>
-              <el-form-item label="provider" prop="provider">
-                <el-input v-model="createForm.provider" placeholder="Not required (非必填)" />
+                <el-input v-model="createFormRedirect.redirect_url_fail" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="createFormRef.resetFields()">reset (重置)</el-button>
-                <el-button type="primary" @click="createSubmit">submit (提交)</el-button>
+                <el-button type="danger" @click="createFormRedirectRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="createSubmitRedirect">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>
           <el-main>
-            <template v-if="createResult">
+            <template v-if="createRedirectResult">
               <div>response:</div>
-              <pre>{{ createResult }}</pre>
+              <pre>{{ createRedirectResult }}</pre>
             </template>
           </el-main>
         </el-container>
       </el-collapse-item>
-      <el-collapse-item title="query (查询订单)" name="query">
-        <el-container v-loading="queryLoading">
+      <el-collapse-item title="Redirect query (查询订单)" name="query">
+        <el-container v-loading="queryLoadingRedirect">
           <el-aside width="500px">
-            <el-form ref="queryFormRef" :model="queryForm" :rules="queryRules" label-width="140px">
+            <el-form ref="queryFormRedirectRef" :model="queryFormRedirect" :rules="queryRulesRedirect" label-width="140px">
               <el-form-item label="order_id (商户订单id)" prop="order_id">
-                <el-input v-model="queryForm.order_id" placeholder="queryForm.order_id (请输入唯一的商户订单id)" />
+                <el-input v-model="queryFormRedirect.order_id" placeholder="queryFormRedirect.order_id (请输入唯一的商户订单id)" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="queryFormRef.resetFields()">reset (重置)</el-button>
-                <el-button type="primary" @click="querySubmit">submit (提交)</el-button>
+                <el-button type="danger" @click="queryFormRedirectRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="querySubmitRedirect">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>
           <el-main>
-            <template v-if="queryResult">
+            <template v-if="queryRedirectResult">
               <div>response:</div>
-              <pre>{{ queryResult }}</pre>
+              <pre>{{ queryRedirectResult }}</pre>
             </template>
           </el-main>
         </el-container>
       </el-collapse-item>
-      <el-collapse-item title="refund (发起退款)" name="refund">
-        <el-container v-loading="refundLoading">
+      <el-collapse-item title="Redirect refund (发起退款)" name="refund">
+        <el-container v-loading="refundLoadingRedirect">
           <el-aside width="500px">
             <el-form
-              ref="refundFormRef"
-              :model="refundForm"
-              :rules="refundRules"
+              ref="refundFormRedirectRef"
+              :model="refundFormRedirect"
+              :rules="refundRulesRedirect"
               label-width="140px"
             >
               <el-form-item label="order_id (商户订单id)" prop="order_id">
-                <el-input v-model="refundForm.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
+                <el-input v-model="refundFormRedirect.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
               </el-form-item>
               <el-form-item label="refund_amount (退款金额)" prop="refund_amount">
-                <el-input v-model.number="refundForm.refund_amount" type="number" />
+                <el-input v-model.number="refundFormRedirect.refund_amount" type="number" min="1" />
               </el-form-item>
               <el-form-item label=" ">
-                <el-button type="danger" @click="refundFormRef.resetFields()">reset (重置)</el-button>
-                <el-button type="primary" @click="refundSubmit">submit (提交)</el-button>
+                <el-button type="danger" @click="refundFormRedirectRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="refundSubmitRedirect">submit (提交)</el-button>
               </el-form-item>
             </el-form>
           </el-aside>
           <el-main>
-            <template v-if="queryResult">
+            <template v-if="refundRedirectResult">
               <div>response:</div>
-              <pre>{{ queryResult }}</pre>
+              <pre>{{ refundRedirectResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <!--<el-collapse-item title="取消订单" name="4">
+      </el-collapse-item>-->
+    </el-collapse>
+  </el-card>
+  <el-card>
+    <el-collapse accordion model-value="miniapp">
+      <el-collapse-item title="Miniapp Create Order (创建订单)" name="create">
+        <el-container v-loading="createLoadingMiniapp">
+          <el-aside width="500px">
+            <el-form
+              ref="createFormMiniappRef"
+              :model="createFormMiniapp"
+              :rules="createRulesMiniapp"
+              label-width="140px"
+            >
+              <el-form-item label="amount (订单金额)" prop="amount">
+                <el-input v-model.number="createFormMiniapp.amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label="Merchant order id (商户订单id)" prop="merchant_order_id">
+                <el-input
+                  v-model="createFormMiniapp.merchant_order_id"
+                  placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)"
+                />
+              </el-form-item>
+              <el-form-item label="note (备注信息)" prop="note">
+                <el-input v-model="createFormMiniapp.note" placeholder="Not required (非必填)" />
+              </el-form-item>
+              <el-form-item label="miniapp_openid" prop="miniapp_openid">
+                <el-input v-model="createFormMiniapp.miniapp_openid" placeholder="Not required (非必填)" />
+              </el-form-item>
+              <el-form-item label="miniapp_appid" prop="miniapp_appid">
+                <el-input v-model="createFormMiniapp.miniapp_appid" placeholder="Not required (非必填)" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="createFormMiniappRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="createSubmitMiniapp">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="createMiniappResult">
+              <div>response:</div>
+              <pre>{{ createMiniappResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Miniapp query (查询订单)" name="query">
+        <el-container v-loading="queryLoadingMiniapp">
+          <el-aside width="500px">
+            <el-form ref="queryFormMiniappRef" :model="queryFormMiniapp" :rules="queryRulesMiniapp" label-width="140px">
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="queryFormMiniapp.order_id" placeholder="queryFormMiniapp.order_id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="queryFormMiniappRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="querySubmitMiniapp">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="queryMiniappResult">
+              <div>response:</div>
+              <pre>{{ queryMiniappResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Miniapp refund (发起退款)" name="refund">
+        <el-container v-loading="refundLoadingMiniapp">
+          <el-aside width="500px">
+            <el-form
+              ref="refundFormMiniappRef"
+              :model="refundFormMiniapp"
+              :rules="refundRulesMiniapp"
+              label-width="140px"
+            >
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="refundFormMiniapp.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label="refund_amount (退款金额)" prop="refund_amount">
+                <el-input v-model.number="refundFormMiniapp.refund_amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="refundFormMiniappRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="refundSubmitMiniapp">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="refundMiniappResult">
+              <div>response:</div>
+              <pre>{{ refundMiniappResult }}</pre>
             </template>
           </el-main>
         </el-container>
@@ -137,105 +232,197 @@
     }
   }
 
-  // 创建订单表单
-  function useCreateForm() {
+  // redirect create form 创建订单表单
+  function useCreateFormRedirect() {
     const state = reactive({
-      createFormRef: null,
-      createLoading: false,
-      createForm: {
+      createFormRedirectRef: null,
+      createLoadingRedirect: false,
+      createFormRedirect: {
         amount: 1,
         merchant_order_id: '',
         note: '',
         redirect_url: '',
-        redirect_url_fail: '',
-        provider: ''
+        redirect_url_fail: ''
       },
-      createRules: {
+      createRulesRedirect: {
         amount: [{ required: true, type: 'number' }],
         merchant_order_id: [{ required: true, type: 'string' }]
       },
-      createResult: null,
-      createSubmit() {
-        state.createLoading = true
-        submit().finally(() => (state.createLoading = false))
+      createRedirectResult: null,
+      createSubmitRedirect() {
+        state.createLoadingRedirect = true
+        submit().finally(() => (state.createLoadingRedirect = false))
       }
     })
 
     async function submit() {
-      await state.createFormRef.validate()
-      state.createResult = await onResponse(
-        await axios.post('/api/orderCreate', parseData(state.createForm))
+      await state.createFormRedirectRef.validate()
+      state.createRedirectResult = await onResponse(
+        await axios.post('/api/redirect/orderCreate', parseData(state.createFormRedirect))
       )
     }
 
     return state
   }
 
-  // 查询订单
-  function useQueryForm() {
+  // redirect query form 查询订单
+  function useQueryFormRedirect() {
     const state = reactive({
-      queryFormRef: null,
-      queryLoading: false,
-      queryForm: {
+      queryFormRedirectRef: null,
+      queryLoadingRedirect: false,
+      queryFormRedirect: {
         order_id: ''
       },
-      queryRules: {
+      queryRulesRedirect: {
         order_id: [{ required: true, type: 'string' }]
       },
-      queryResult: null,
-      querySubmit() {
-        state.queryLoading = true
-        submit().finally(() => (state.queryLoading = false))
+      queryRedirectResult: null,
+      querySubmitRedirect() {
+        state.queryLoadingRedirect = true
+        submit().finally(() => (state.queryLoadingRedirect = false))
       }
     })
 
     async function submit() {
-      await state.queryFormRef.validate()
-      state.queryResult = await onResponse(
-        await axios.post('/api/orderQuery', parseData(state.queryForm))
+      await state.queryFormRedirectRef.validate()
+      state.queryRedirectResult = await onResponse(
+        await axios.post('/api/redirect/orderQuery', parseData(state.queryFormRedirect))
       )
     }
 
     return state
   }
 
-  // 订单退款
-  function useRefundForm() {
+  // redirect refund form 订单退款
+  function useRefundFormRedirect() {
     const state = reactive({
-      refundFormRef: null,
-      refundLoading: false,
-      refundForm: {
+      refundFormRedirectRef: null,
+      refundLoadingRedirect: false,
+      refundFormRedirect: {
         order_id: '',
-        refund_amount: 0.01
+        refund_amount: 1
       },
-      refundRules: {
+      refundRulesRedirect: {
         order_id: [{ required: true, type: 'string' }],
         refund_amount: [{ required: true, type: 'number' }]
       },
-      refundResult: null,
-      refundSubmit() {
-        state.refundLoading = true
-        submit().finally(() => (state.refundLoading = false))
+      refundRedirectResult: null,
+      refundSubmitRedirect() {
+        state.refundLoadingRedirect = true
+        submit().finally(() => (state.refundLoadingRedirect = false))
       }
     })
 
     async function submit() {
-      await state.refundFormRef.validate()
-      state.refundResult = await onResponse(
-        await axios.post('/api/orderRefund', parseData(state.refundForm))
+      await state.refundFormRedirectRef.validate()
+      state.refundRedirectResult = await onResponse(
+        await axios.post('/api/redirect/orderRefund', parseData(state.refundFormRedirect))
       )
     }
 
     return state
   }
 
+  // miniapp create form 创建订单表单
+  function useCreateFormMiniapp() {
+    const state = reactive({
+      createFormMiniappRef: null,
+      createLoadingMiniapp: false,
+      createFormMiniapp: {
+        amount: 1,
+        merchant_order_id: '',
+        note: '',
+        miniapp_openid: '',
+        miniapp_appid: ''
+      },
+      createRulesMiniapp: {
+        amount: [{ required: true, type: 'number' }],
+        merchant_order_id: [{ required: true, type: 'string' }]
+      },
+      createMiniappResult: null,
+      createSubmitMiniapp() {
+        state.createLoadingMiniapp = true
+        submit().finally(() => (state.createLoadingMiniapp = false))
+      }
+    })
+
+    async function submit() {
+      await state.createFormMiniappRef.validate()
+      state.createMiniappResult = await onResponse(
+        await axios.post('/api/miniapp/orderCreate', parseData(state.createFormMiniapp))
+      )
+    }
+
+    return state
+  }
+
+  // miniapp query form 查询订单
+  function useQueryFormMiniapp() {
+    const state = reactive({
+      queryFormMiniappRef: null,
+      queryLoadingMiniapp: false,
+      queryFormMiniapp: {
+        order_id: ''
+      },
+      queryRulesMiniapp: {
+        order_id: [{ required: true, type: 'string' }]
+      },
+      queryMiniappResult: null,
+      querySubmitMiniapp() {
+        state.queryLoadingMiniapp = true
+        submit().finally(() => (state.queryLoadingMiniapp = false))
+      }
+    })
+
+    async function submit() {
+      await state.queryFormMiniappRef.validate()
+      state.queryMiniappResult = await onResponse(
+        await axios.post('/api/miniapp/orderQuery', parseData(state.queryFormMiniapp))
+      )
+    }
+
+    return state
+  }
+
+  // miniapp refund form 订单退款
+  function useRefundFormMiniapp() {
+    const state = reactive({
+      refundFormMiniappRef: null,
+      refundLoadingMiniapp: false,
+      refundFormMiniapp: {
+        order_id: '',
+        refund_amount: 1
+      },
+      refundRulesMiniapp: {
+        order_id: [{ required: true, type: 'string' }],
+        refund_amount: [{ required: true, type: 'number' }]
+      },
+      refundMiniappResult: null,
+      refundSubmitMiniapp() {
+        state.refundLoadingMiniapp = true
+        submit().finally(() => (state.refundLoadingMiniapp = false))
+      }
+    })
+
+    async function submit() {
+      await state.refundFormMiniappRef.validate()
+      state.refundMiniappResult = await onResponse(
+        await axios.post('/api/miniapp/orderRefund', parseData(state.refundFormMiniapp))
+      )
+    }
+
+    return state
+  }
 
   createApp({
     setup() {
       return {
-        ...toRefs(useCreateForm()),
-        ...toRefs(useQueryForm()),
-        ...toRefs(useRefundForm())
+        ...toRefs(useCreateFormRedirect()),
+        ...toRefs(useQueryFormRedirect()),
+        ...toRefs(useRefundFormRedirect()),
+        ...toRefs(useCreateFormMiniapp()),
+        ...toRefs(useQueryFormMiniapp()),
+        ...toRefs(useRefundFormMiniapp())
       }
     }
   })

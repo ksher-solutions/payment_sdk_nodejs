@@ -40,41 +40,43 @@ npm run serve-example
 7. Enter http://localhost:3000/demo.html will display demo website
 
 
-> Alterative way you can call API localhost over postman by
->
-> POST over http://localhost:3000/api/orderCreate
-> 
-> with Request Body
-> ```json
-> {
->             "amount": 100,
->             "merchant_order_id": "2022063010481",
->             "note": "string",
->             "redirect_url": "https://web.site/pass",
->             "redirect_url_fail": "https://web.site/fail",
->             "timestamp": "2022051900"
-> }
-> ```
+Alterative way you can call API localhost over postman by
+
+POST over http://localhost:3000/api/redirect/orderCreate
+
+with Request Body
+```json
+{
+            "amount": 100,
+            "merchant_order_id": "2022063010481",
+            "note": "string",
+            "redirect_url": "https://web.site/pass",
+            "redirect_url_fail": "https://web.site/fail",
+            "timestamp": "2022051900"
+}
+```
 
 ## Advance Config Running Code
 
-## 1. Install only SDK
+### 1. Install only SDK
 
 You can use package manager to install ksher-pay SDK.
 
-### 1.1. npm
+#### 1.1. npm
 
 ```shell
 npm install ksher-pay
 ```
 
-### 1.2. yarn
+#### 1.2. yarn
 
 ```shell
 yarn add ksher-pay
 ```
 
-### 2.1. Prepare the configuration data
+### 2. configuration data
+
+### 2.1 Prepare the configuration data
 
 ```javascript
 // Please use you own host address and token...
@@ -84,18 +86,23 @@ const setting = {
 }
 ```
 
-### 2.2. Import the SDK and initialize
+### 2.2. Import the SDK
 
 ```javascript
-const PaymentSDK = require("ksher-payment");
+const PaymentSDK = require("ksher-pay");
 const MySDK = new PaymentSDK(setting);
-
-// SDK for miniapp
-const miniAppSDK = require('ksher-payment/src/miniapp')
-const MyMiniAppSDK = new miniAppSDK(setting);
 ```
 
-### 2.3. Create new order
+### 3. Redirect API
+#### 3.1. Redirect API Create new order
+
+initialize redirect SDK
+
+```javascript
+// SDK for redirect
+const redirectAppSDK = require('ksher-pay/src/redirect')
+const MyRedirectAppSDK = new redirectAppSDK(setting);
+```
 
 ```javascript
 const data = {
@@ -115,7 +122,7 @@ MySDK.orderCreate(data).then(({data})=>{
 })
 ```
 
-### 2.4. Query order status
+#### 3.2. Redirect API Query order status
 
 ```javascript
 
@@ -131,7 +138,7 @@ MySDK.orderQuery(order_id, data).then(({data})=>{
 })
 ```
 
-### 2.5. Refund
+#### 3.3. Redirect Refund
 
 ```javascript
 const order_id = '202106070001'
@@ -148,9 +155,11 @@ MySDK.orderRefund(order_id, data).then(({data})=>{
 })
 ```
 
-### 2.6. Create new order for alipay miniapp
+### 4. alipay miniapp API
 
-#### 2.6.1. Get orderStr
+#### 4.1. Create new order for alipay miniapp
+
+##### 4.1.1. Get orderStr
 ```javascript
 const data = {
 	amount: 100, 							// the unit is cent.
@@ -170,13 +179,13 @@ MyMiniAppSDK.orderCreate(data).then(({data})=>{
 })
 ```
 
-#### 2.6.2. Pay in alipay miniapp
+##### 4.1.2.  Pay in alipay miniapp
 ```javascript
 // run in alipay miniapp
 my.tradePay({ orderStr: 'the reference value' })
 ```
 
-### 2.7. Verify signature
+### 5. Verify signature
 
 Verify signature from the webhook request
 
@@ -198,7 +207,7 @@ if(valid){
 }
 ```
 
-## 3. Reference
+## 6. Reference
 
 The source code of the SDK is hosted in github, you are welcome to raise issue and PR.
 
