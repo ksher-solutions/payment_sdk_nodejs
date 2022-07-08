@@ -6,12 +6,11 @@ const cors = require('koa-cors');
 const koaBody = require('koa-body')
 const KsherRedirectSDK = require('../src/redirect')
 const KsherMiniappSDK = require('../src/miniapp')
+const KsherCscanbSDK = require('../src/cscanb')
 
 // 配置信息
 // configuration information
-const { token, host, port } = require('./setting.json')
-const $redirect_url = "http://www.baidu.com"
-const $redirect_url_fail = "http://www.baidu.com"
+const { token, host, port } = require('./setting.json');
 
 const $miniapp_openid = ""
 const $miniapp_appid = ""
@@ -24,6 +23,7 @@ const app = new Koa()
 // sdk initialization
 const ksherRedirect = new KsherRedirectSDK({ token, host });
 const ksherMiniapp = new KsherMiniappSDK({ token, host });
+const ksherCscanb = new KsherCscanbSDK({ token, host });
 
 // 静态 demo
 // static demo
@@ -65,21 +65,16 @@ function getRouter() {
   // 创建订单接口
   // Create order interface
   router.post('/api/redirect/orderCreate', async (ctx, next) => {
-    const {
-      note = "some note for this order",
-      redirect_url = $redirect_url,
-      redirect_url_fail = $redirect_url_fail,
-      timestamp = getTime(),
-      amount,
-      merchant_order_id,
-    } = ctx.request.body
-
-    if (!amount || !merchant_order_id) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.amount || !data.merchant_order_id || !data.redirect_url || !data.redirect_url_fail) {
       ctx.body = { code: 0, message: '参数不足' }
       return next()
     }
 
-    const data = { note, redirect_url, redirect_url_fail, timestamp, amount, merchant_order_id }
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
 
     ctx.body = await ksherRedirect.orderCreate(data)
       .then(({ data }) => ({ code: 1, data }))
@@ -94,17 +89,20 @@ function getRouter() {
   // 查询订单接口
   // Query order interface
   router.post('/api/redirect/orderQuery', async (ctx, next) => {
-    const {
-      order_id,
-      timestamp = getTime()
-    } = ctx.request.body
-
-    if (!order_id) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id) {
       ctx.body = { code: 0, message: '参数不全' }
       return next()
     }
 
-    ctx.body = await ksherRedirect.orderQuery(order_id, { timestamp })
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id;
+    delete data.order_id
+    
+    ctx.body = await ksherRedirect.orderQuery(order_id, data)
       .then(({ data }) => ({ code: 1, data }))
       .catch(data => {
         console.log('------------------error-----------------------', data);
@@ -117,18 +115,23 @@ function getRouter() {
   // 订单退款接口
   // Order refund interface
   router.post('/api/redirect/orderRefund', async (ctx, next) => {
-    const { order_id, refund_amount, timestamp = getTime() } = ctx.request.body
-    if (!order_id || !refund_amount) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id || !data.refund_amount) {
       ctx.body = { code: 0, message: '参数不全' }
       return next()
     }
 
-    const data = {
-      refund_amount,
-      timestamp,
-      refund_order_id: order_id +"_"+ getTime()
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
     }
+    const order_id = data.order_id
+    if (!data.refund_order_id || (data.refund_order_id == '')){
 
+        data.refund_order_id = order_id +"_"+ getTime()
+    }
+    
+    delete data.order_id
     ctx.body = await ksherRedirect.orderRefund(order_id, data)
       .then(({ data }) => ({ code: 1, data }))
       .catch(data => {
@@ -184,21 +187,16 @@ function getRouter() {
     // 创建订单接口
   // Create order interface
   router.post('/api/miniapp/orderCreate', async (ctx, next) => {
-    const {
-      note = "some note for this order",
-      miniapp_openid = $miniapp_openid,
-      miniapp_appid = $miniapp_appid,
-      timestamp = getTime(),
-      amount,
-      merchant_order_id,
-    } = ctx.request.body
-
-    if (!amount || !merchant_order_id) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.amount || !data.merchant_order_id || !data.miniapp_openid || !data.miniapp_appid) {
       ctx.body = { code: 0, message: '参数不足' }
       return next()
     }
 
-    const data = { note, miniapp_openid, miniapp_appid, timestamp, amount, merchant_order_id }
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
 
     ctx.body = await ksherMiniapp.orderCreate(data)
       .then(({ data }) => ({ code: 1, data }))
@@ -213,17 +211,20 @@ function getRouter() {
   // 查询订单接口
   // Query order interface
   router.post('/api/miniapp/orderQuery', async (ctx, next) => {
-    const {
-      order_id,
-      timestamp = getTime()
-    } = ctx.request.body
-
-    if (!order_id) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id) {
       ctx.body = { code: 0, message: '参数不全' }
       return next()
     }
 
-    ctx.body = await ksherMiniapp.orderQuery(order_id, { timestamp })
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id;
+    delete data.order_id
+
+    ctx.body = await ksherMiniapp.orderQuery(order_id, data)
       .then(({ data }) => ({ code: 1, data }))
       .catch(data => {
         console.log('------------------error-----------------------', data);
@@ -236,19 +237,103 @@ function getRouter() {
   // 订单退款接口
   // Order refund interface
   router.post('/api/miniapp/orderRefund', async (ctx, next) => {
-    const { order_id, refund_amount, timestamp = getTime() } = ctx.request.body
-    if (!order_id || !refund_amount) {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id || !data.refund_amount) {
       ctx.body = { code: 0, message: '参数不全' }
       return next()
     }
 
-    const data = {
-      refund_amount,
-      timestamp,
-      refund_order_id: order_id +"_"+ getTime()
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id
+    if (!data.refund_order_id || (data.refund_order_id == '')){
+
+        data.refund_order_id = order_id +"_"+ getTime()
     }
 
+    delete data.order_id
     ctx.body = await ksherMiniapp.orderRefund(order_id, data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+      // 创建订单接口
+  // Create order interface
+  router.post('/api/cscanb/orderCreate', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.amount || !data.merchant_order_id || !data.channel) {
+      ctx.body = { code: 0, message: '参数不足' }
+      return next()
+    }
+
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+
+    ctx.body = await ksherCscanb.orderCreate(data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+  // 查询订单接口
+  // Query order interface
+  router.post('/api/cscanb/orderQuery', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id) {
+      ctx.body = { code: 0, message: '参数不全' }
+      return next()
+    }
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id;
+    delete data.order_id
+
+    ctx.body = await ksherCscanb.orderQuery(order_id, data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+  // 订单退款接口
+  // Order refund interface
+  router.post('/api/cscanb/orderRefund', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id || !data.refund_amount) {
+      ctx.body = { code: 0, message: '参数不全' }
+      return next()
+    }
+
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id
+    if (!data.refund_order_id || (data.refund_order_id == '')){
+
+        data.refund_order_id = order_id +"_"+ getTime()
+    }
+    
+    delete data.order_id
+    ctx.body = await ksherCscanb.orderRefund(order_id, data)
       .then(({ data }) => ({ code: 1, data }))
       .catch(data => {
         console.log('------------------error-----------------------', data);

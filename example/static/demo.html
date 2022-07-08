@@ -36,10 +36,10 @@
                 <el-input v-model="createFormRedirect.note" placeholder="Not required (非必填)" />
               </el-form-item>
               <el-form-item label="redirect_url (成功回调地址)" prop="redirect_url">
-                <el-input v-model="createFormRedirect.redirect_url" placeholder="Not required (非必填)" />
+                <el-input v-model="createFormRedirect.redirect_url" placeholder="The url to be redirected after the client's payment is completed" />
               </el-form-item>
               <el-form-item label="redirect_url_fail (失败回调地址)" prop="redirect_url_fail">
-                <el-input v-model="createFormRedirect.redirect_url_fail" placeholder="Not required (非必填)" />
+                <el-input v-model="createFormRedirect.redirect_url_fail" placeholder="The url to be redirected after the client payment is not completed or cancelled" />
               </el-form-item>
               <el-form-item label=" ">
                 <el-button type="danger" @click="createFormRedirectRef.resetFields()">reset (重置)</el-button>
@@ -206,6 +206,100 @@
       </el-collapse-item>-->
     </el-collapse>
   </el-card>
+  <el-card>
+    <el-collapse accordion model-value="cscanb">
+      <el-collapse-item title="CscanB Create Order (创建订单)" name="create">
+        <el-container v-loading="createLoadingCscanb">
+          <el-aside width="500px">
+            <el-form
+              ref="createFormCscanbRef"
+              :model="createFormCscanb"
+              :rules="createRulesCscanb"
+              label-width="140px"
+            >
+              <el-form-item label="amount (订单金额)" prop="amount">
+                <el-input v-model.number="createFormCscanb.amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label="Merchant order id (商户订单id)" prop="merchant_order_id">
+                <el-input
+                  v-model="createFormCscanb.merchant_order_id"
+                  placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)"
+                />
+              </el-form-item>
+              <el-form-item label="note (备注信息)" prop="note">
+                <el-input v-model="createFormCscanb.note" placeholder="Not required (非必填)" />
+              </el-form-item>
+              <el-form-item label="channel" prop="channel">
+                <el-input v-model="createFormCscanb.channel" placeholder="channel create order" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="createFormCscanbRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="createSubmitCscanb">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="createCscanbResult">
+              <div>response:</div>
+              <pre>{{ createCscanbResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Cscanb query (查询订单)" name="query">
+        <el-container v-loading="queryLoadingCscanb">
+          <el-aside width="500px">
+            <el-form ref="queryFormCscanbRef" :model="queryFormCscanb" :rules="queryRulesCscanb" label-width="140px">
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="queryFormCscanb.order_id" placeholder="queryFormCscanb.order_id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="queryFormCscanbRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="querySubmitCscanb">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="queryCscanbResult">
+              <div>response:</div>
+              <pre>{{ queryCscanbResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Cscanb refund (发起退款)" name="refund">
+        <el-container v-loading="refundLoadingCscanb">
+          <el-aside width="500px">
+            <el-form
+              ref="refundFormCscanbRef"
+              :model="refundFormCscanb"
+              :rules="refundRulesCscanb"
+              label-width="140px"
+            >
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="refundFormCscanb.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label="refund_amount (退款金额)" prop="refund_amount">
+                <el-input v-model.number="refundFormCscanb.refund_amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="refundFormCscanbRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="refundSubmitCscanb">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="refundCscanbResult">
+              <div>response:</div>
+              <pre>{{ refundCscanbResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <!--<el-collapse-item title="取消订单" name="4">
+      </el-collapse-item>-->
+    </el-collapse>
+  </el-card>
 </div>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -242,11 +336,14 @@
         merchant_order_id: '',
         note: '',
         redirect_url: '',
-        redirect_url_fail: ''
+        redirect_url_fail: '',
+        timestamp: ''
       },
       createRulesRedirect: {
         amount: [{ required: true, type: 'number' }],
-        merchant_order_id: [{ required: true, type: 'string' }]
+        merchant_order_id: [{ required: true, type: 'string' }],
+        redirect_url: [{ required: true, type: 'string' }],
+        redirect_url_fail: [{ required: true, type: 'string' }]
       },
       createRedirectResult: null,
       createSubmitRedirect() {
@@ -256,6 +353,8 @@
     })
 
     async function submit() {
+      state.createFormRedirect.timestamp = Date.now().toString()
+
       await state.createFormRedirectRef.validate()
       state.createRedirectResult = await onResponse(
         await axios.post('/api/redirect/orderCreate', parseData(state.createFormRedirect))
@@ -271,7 +370,8 @@
       queryFormRedirectRef: null,
       queryLoadingRedirect: false,
       queryFormRedirect: {
-        order_id: ''
+        order_id: '',
+        timestamp: ''
       },
       queryRulesRedirect: {
         order_id: [{ required: true, type: 'string' }]
@@ -284,6 +384,8 @@
     })
 
     async function submit() {
+      state.queryFormRedirect.timestamp = Date.now().toString()
+
       await state.queryFormRedirectRef.validate()
       state.queryRedirectResult = await onResponse(
         await axios.post('/api/redirect/orderQuery', parseData(state.queryFormRedirect))
@@ -300,7 +402,8 @@
       refundLoadingRedirect: false,
       refundFormRedirect: {
         order_id: '',
-        refund_amount: 1
+        refund_amount: 1,
+        timestamp: ''
       },
       refundRulesRedirect: {
         order_id: [{ required: true, type: 'string' }],
@@ -314,6 +417,8 @@
     })
 
     async function submit() {
+      state.refundFormRedirect.timestamp = Date.now().toString()
+
       await state.refundFormRedirectRef.validate()
       state.refundRedirectResult = await onResponse(
         await axios.post('/api/redirect/orderRefund', parseData(state.refundFormRedirect))
@@ -333,7 +438,8 @@
         merchant_order_id: '',
         note: '',
         miniapp_openid: '',
-        miniapp_appid: ''
+        miniapp_appid: '',
+        timestamp: ''
       },
       createRulesMiniapp: {
         amount: [{ required: true, type: 'number' }],
@@ -347,6 +453,8 @@
     })
 
     async function submit() {
+      state.createFormMiniapp.timestamp = Date.now().toString()
+
       await state.createFormMiniappRef.validate()
       state.createMiniappResult = await onResponse(
         await axios.post('/api/miniapp/orderCreate', parseData(state.createFormMiniapp))
@@ -362,7 +470,8 @@
       queryFormMiniappRef: null,
       queryLoadingMiniapp: false,
       queryFormMiniapp: {
-        order_id: ''
+        order_id: '',
+        timestamp: ''
       },
       queryRulesMiniapp: {
         order_id: [{ required: true, type: 'string' }]
@@ -375,6 +484,8 @@
     })
 
     async function submit() {
+      state.queryFormMiniapp.timestamp = Date.now().toString()
+
       await state.queryFormMiniappRef.validate()
       state.queryMiniappResult = await onResponse(
         await axios.post('/api/miniapp/orderQuery', parseData(state.queryFormMiniapp))
@@ -391,7 +502,8 @@
       refundLoadingMiniapp: false,
       refundFormMiniapp: {
         order_id: '',
-        refund_amount: 1
+        refund_amount: 1,
+        timestamp: ''
       },
       refundRulesMiniapp: {
         order_id: [{ required: true, type: 'string' }],
@@ -405,6 +517,8 @@
     })
 
     async function submit() {
+      state.refundFormMiniapp.timestamp = Date.now().toString()
+
       await state.refundFormMiniappRef.validate()
       state.refundMiniappResult = await onResponse(
         await axios.post('/api/miniapp/orderRefund', parseData(state.refundFormMiniapp))
@@ -413,7 +527,105 @@
 
     return state
   }
+  // Cscanb create form 创建订单表单
+  function useCreateFormCscanb() {
+    const state = reactive({
+      createFormCscanbRef: null,
+      createLoadingCscanb: false,
+      createFormCscanb: {
+        amount: 1,
+        merchant_order_id: '',
+        note: '',
+        channel: '',
+        timestamp: ''
+      },
+      createRulesCscanb: {
+        amount: [{ required: true, type: 'number' }],
+        merchant_order_id: [{ required: true, type: 'string' }],
+        channel: [{ required: true, type: 'string' }]
+      },
+      createCscanbResult: null,
+      createSubmitCscanb() {
+        state.createLoadingCscanb = true
+        submit().finally(() => (state.createLoadingCscanb = false))
+      }
+    })
 
+    async function submit() {
+      state.createFormCscanb.timestamp = Date.now().toString()
+
+      await state.createFormCscanbRef.validate()
+      state.createCscanbResult = await onResponse(
+        await axios.post('/api/cscanb/orderCreate', parseData(state.createFormCscanb))
+      )
+    }
+
+    return state
+  }
+
+  // Cscanb query form 查询订单
+  function useQueryFormCscanb() {
+    const state = reactive({
+      queryFormCscanbRef: null,
+      queryLoadingCscanb: false,
+      queryFormCscanb: {
+        order_id: '',
+        timestamp: ''
+      },
+      queryRulesCscanb: {
+        order_id: [{ required: true, type: 'string' }]
+      },
+      queryCscanbResult: null,
+      querySubmitCscanb() {
+        state.queryLoadingCscanb = true
+        submit().finally(() => (state.queryLoadingCscanb = false))
+      }
+    })
+
+    async function submit() {
+      state.queryFormCscanb.timestamp = Date.now().toString()
+
+      await state.queryFormCscanbRef.validate()
+      state.queryCscanbResult = await onResponse(
+        await axios.post('/api/cscanb/orderQuery', parseData(state.queryFormCscanb))
+      )
+    }
+
+    return state
+  }
+
+  // Cscanb refund form 订单退款
+  function useRefundFormCscanb() {
+    const state = reactive({
+      refundFormCscanbRef: null,
+      refundLoadingCscanb: false,
+      refundFormCscanb: {
+        order_id: '',
+        refund_amount: 1,
+        timestamp: ''
+      },
+      refundRulesCscanb: {
+        order_id: [{ required: true, type: 'string' }],
+        refund_amount: [{ required: true, type: 'number' }]
+      },
+      refundCscanbResult: null,
+      refundSubmitCscanb() {
+        state.refundLoadingCscanb = true
+        submit().finally(() => (state.refundLoadingCscanb = false))
+      }
+    })
+
+    async function submit() {
+      state.refundFormCscanb.timestamp = Date.now().toString()
+
+      await state.refundFormCscanbRef.validate()
+      state.refundCscanbResult = await onResponse(
+        await axios.post('/api/cscanb/orderRefund', parseData(state.refundFormCscanb))
+      )
+    }
+
+    return state
+  }
   createApp({
     setup() {
       return {
@@ -422,7 +634,10 @@
         ...toRefs(useRefundFormRedirect()),
         ...toRefs(useCreateFormMiniapp()),
         ...toRefs(useQueryFormMiniapp()),
-        ...toRefs(useRefundFormMiniapp())
+        ...toRefs(useRefundFormMiniapp()),
+        ...toRefs(useCreateFormCscanb()),
+        ...toRefs(useQueryFormCscanb()),
+        ...toRefs(useRefundFormCscanb())
       }
     }
   })
