@@ -64,6 +64,8 @@ You can use package manager to install ksher-pay SDK.
 
 #### 1.1. npm
 
+Visit our npm at here https://www.npmjs.com/package/ksher-pay
+
 ```shell
 npm install ksher-pay
 ```
@@ -94,15 +96,16 @@ const MySDK = new PaymentSDK(setting);
 ```
 
 ### 3. Redirect API
-#### 3.1. Redirect API Create new order
 
-initialize redirect SDK
+#### 3.1. Initialize redirect SDK
 
 ```javascript
 // SDK for redirect
 const redirectAppSDK = require('ksher-pay/src/redirect')
 const MyRedirectAppSDK = new redirectAppSDK(setting);
 ```
+
+#### 3.2. Redirect API Create new order
 
 ```javascript
 const data = {
@@ -122,7 +125,7 @@ MySDK.orderCreate(data).then(({data})=>{
 })
 ```
 
-#### 3.2. Redirect API Query order status
+#### 3.3. Redirect API Query order status
 
 ```javascript
 
@@ -138,7 +141,7 @@ MySDK.orderQuery(order_id, data).then(({data})=>{
 })
 ```
 
-#### 3.3. Redirect Refund
+#### 3.4. Redirect Refund
 
 ```javascript
 const order_id = '202106070001'
@@ -157,9 +160,17 @@ MySDK.orderRefund(order_id, data).then(({data})=>{
 
 ### 4. alipay miniapp API
 
-#### 4.1. Create new order for alipay miniapp
+#### 4.1. Initialize miniapp SDK
 
-##### 4.1.1. Get orderStr
+```javascript
+// SDK for redirect
+const miniappAppSDK = require('ksher-pay/src/miniapp')
+const MyMiniAppSDK = new miniappAppSDK(setting);
+```
+
+#### 4.2. Create new order for alipay miniapp
+
+##### 4.2.1. Get orderStr
 ```javascript
 const data = {
 	amount: 100, 							// the unit is cent.
@@ -179,13 +190,140 @@ MyMiniAppSDK.orderCreate(data).then(({data})=>{
 })
 ```
 
-##### 4.1.2.  Pay in alipay miniapp
+##### 4.2.2.  Pay in alipay miniapp
 ```javascript
 // run in alipay miniapp
 my.tradePay({ orderStr: 'the reference value' })
 ```
 
-### 5. Verify signature
+### 5. C scan B API
+
+#### 5.1. Initialize C scan B SDK
+
+```javascript
+// SDK for C scan B
+
+const KsherCscanbSDK = require('ksher-pay/src/cscanb')
+const ksherCscanb = new KsherCscanbSDK(setting);
+```
+
+#### 5.2. C scan B API Create new order
+
+```javascript
+const data = {
+	note: "Note to this order",
+	channel: "promptpay",      				   // channel to pay
+	timestamp: "1623058159665", 			   // timestamp
+    amount: 100, 						       // the unit is cent.
+	merchant_order_id: "202106070001"          // this should be uniq 
+}
+
+MySDK.orderCreate(data).then(({data})=>{
+	console.log(data)             // order created successfully
+	console.log(data.reserved1)   //Here is base64 image QR code
+}).catch(err => {
+    console.log(err)              //error
+})
+```
+
+#### 5.3. C scan B API Query order status
+
+```javascript
+
+const order_id = "202106070001"                // order id
+const data = {
+	timestamp: "1623058159665", 			   // time stamp
+}
+
+MySDK.orderQuery(order_id, data).then(({data})=>{
+	console.log(data)
+}).catch(err => {
+    console.log(err)
+})
+```
+
+#### 5.4. C scan B Refund
+
+```javascript
+const order_id = '202106070001'
+const data = {
+	refund_order_id: "123456789001",		   
+	timestamp: "1623058159665", 			   
+	refund_amount: 100						  
+}
+
+MySDK.orderRefund(order_id, data).then(({data})=>{
+	console.log(data)
+}).catch(err => {
+    console.log(err)
+})
+```
+
+### 6. B scan C API
+
+#### 6.1. Initialize B scan C SDK
+
+```javascript
+// SDK for B scan C
+
+const KsherBscancSDK = require('ksher-pay/src/bscanc')
+const ksherBscanc = new KsherBscancSDK(setting);
+```
+
+#### 6.2. B scan C API Create new order
+
+```javascript
+const data = {
+	note: "Note to this order",
+	channel: "truemoney",      				   // channel to pay
+	timestamp: "1623058159665", 			   // timestamp
+    amount: 100, 						       // the unit is cent.
+	merchant_order_id: "202106070001",         // this should be uniq
+	auth_code: "xxxxxxxxxx",				   // data reader QR code from customer
+}
+
+MySDK.orderCreate(data).then(({data})=>{
+	console.log(data)             // order created successfully
+	console.log(data.status)      // Here is status payment
+}).catch(err => {
+    console.log(err)              //error
+})
+```
+
+#### 6.3. B scan C API Query order status
+
+```javascript
+
+const order_id = "202106070001"                // order id
+const data = {
+	timestamp: "1623058159665", 			   // time stamp
+}
+
+MySDK.orderQuery(order_id, data).then(({data})=>{
+	console.log(data)
+}).catch(err => {
+    console.log(err)
+})
+```
+
+#### 6.4. B scan C Refund
+
+```javascript
+const order_id = '202106070001'
+const data = {
+	refund_order_id: "123456789001",		   
+	timestamp: "1623058159665", 			   
+	refund_amount: 100						  
+}
+
+MySDK.orderRefund(order_id, data).then(({data})=>{
+	console.log(data)
+}).catch(err => {
+    console.log(err)
+})
+```
+
+### 7. Verify signature
 
 Verify signature from the webhook request
 
@@ -207,7 +345,7 @@ if(valid){
 }
 ```
 
-## 6. Reference
+## 8. Reference
 
 The source code of the SDK is hosted in github, you are welcome to raise issue and PR.
 

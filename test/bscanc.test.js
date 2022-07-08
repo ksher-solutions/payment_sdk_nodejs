@@ -1,13 +1,13 @@
 const chalk = require('chalk')
 
-const PaySDK = require('../src/cscanb')
+const PaySDK = require('../src/bscanc')
 const { token, host } = require('./setting.json')
 
 
 const sdk = new PaySDK({ token, host });
 const getTime = () => '' + +new Date()
 
-describe("test cscanb", () => {
+describe("test bscanc", () => {
   const amount = 100
   const order_id = getTime()
   const note = 'some note for this order'
@@ -17,9 +17,9 @@ describe("test cscanb", () => {
     "amount": amount,
     "merchant_order_id": order_id,
     "note": note,
-    "channel": "truemoney",
+    "channel": "linepay",
+    "auth_code":"aaaa",
     "mid": "mch35618",
-    "provider": "Ksher",
     "timestamp": timestamp
   }
 
@@ -31,9 +31,9 @@ describe("test cscanb", () => {
     expect(data.merchant_order_id).toBe(order_id)
     expect(data.note).toBe(note)
     expect(data.timestamp).toBe(timestamp)
-    expect(data.status).toBe('Available')
+    expect(data.status).toBe('Paid')
     expect(data.error_code).toBe('SUCCESS')
-    expect(data.api_name).toBe('CscanB')
+    expect(data.api_name).toBe('BscanC')
 
     console.log(chalk.bgGreen('  '), chalk.green.bold('Create order result'), data);
     console.log(`QR image: ${ chalk.green(data.reference) }`);
@@ -46,7 +46,7 @@ describe("test cscanb", () => {
 
     expect(data.merchant_order_id).toBe(order_id)
     expect(data.timestamp).toBe(timestamp)
-    expect(data.api_name).toBe('CscanB')
+    expect(data.api_name).toBe('BscanC')
 
     console.log(chalk.bgGreen('  '), chalk.green.bold('Query order result'), data);
   })

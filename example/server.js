@@ -7,6 +7,7 @@ const koaBody = require('koa-body')
 const KsherRedirectSDK = require('../src/redirect')
 const KsherMiniappSDK = require('../src/miniapp')
 const KsherCscanbSDK = require('../src/cscanb')
+const KsherBscancSDK = require('../src/bscanc')
 
 // 配置信息
 // configuration information
@@ -24,6 +25,7 @@ const app = new Koa()
 const ksherRedirect = new KsherRedirectSDK({ token, host });
 const ksherMiniapp = new KsherMiniappSDK({ token, host });
 const ksherCscanb = new KsherCscanbSDK({ token, host });
+const ksherBscanc = new KsherBscancSDK({ token, host });
 
 // 静态 demo
 // static demo
@@ -62,6 +64,7 @@ function getRouter() {
   // interface
   const router = new Router()
 
+  // ----- Redirect -----
   // 创建订单接口
   // Create order interface
   router.post('/api/redirect/orderCreate', async (ctx, next) => {
@@ -184,7 +187,8 @@ function getRouter() {
     return next()
   })
 
-    // 创建订单接口
+  // ----- Mini App -----
+  // 创建订单接口
   // Create order interface
   router.post('/api/miniapp/orderCreate', async (ctx, next) => {
     console.log('request data', ctx.request.body)
@@ -264,7 +268,8 @@ function getRouter() {
     return next();
   })
 
-      // 创建订单接口
+  // ----- C scan B -----
+  // 创建订单接口
   // Create order interface
   router.post('/api/cscanb/orderCreate', async (ctx, next) => {
     console.log('request data', ctx.request.body)
@@ -334,6 +339,87 @@ function getRouter() {
     
     delete data.order_id
     ctx.body = await ksherCscanb.orderRefund(order_id, data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+
+  // ----- B scan C -----
+  // 创建订单接口
+  // Create order interface
+  router.post('/api/bscanc/orderCreate', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.amount || !data.merchant_order_id || !data.channel || !data.auth_code) {
+      ctx.body = { code: 0, message: '参数不足' }
+      return next()
+    }
+
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+
+    ctx.body = await ksherBscanc.orderCreate(data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+  // 查询订单接口
+  // Query order interface
+  router.post('/api/bscanc/orderQuery', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id) {
+      ctx.body = { code: 0, message: '参数不全' }
+      return next()
+    }
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id;
+    delete data.order_id
+
+    ctx.body = await ksherBscanc.orderQuery(order_id, data)
+      .then(({ data }) => ({ code: 1, data }))
+      .catch(data => {
+        console.log('------------------error-----------------------', data);
+        return { code: 0, data: { msg: 'error' } }
+      })
+
+    return next();
+  })
+
+  // 订单退款接口
+  // Order refund interface
+  router.post('/api/bscanc/orderRefund', async (ctx, next) => {
+    console.log('request data', ctx.request.body)
+    const data = ctx.request.body
+    if (!data.order_id || !data.refund_amount) {
+      ctx.body = { code: 0, message: '参数不全' }
+      return next()
+    }
+
+    if (!data.timestamp || (data.timestamp == '')){
+      data.timestamp = getTime()
+    }
+    const order_id = data.order_id
+    if (!data.refund_order_id || (data.refund_order_id == '')){
+
+        data.refund_order_id = order_id +"_"+ getTime()
+    }
+    
+    delete data.order_id
+    ctx.body = await ksherBscanc.orderRefund(order_id, data)
       .then(({ data }) => ({ code: 1, data }))
       .catch(data => {
         console.log('------------------error-----------------------', data);

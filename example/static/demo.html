@@ -300,6 +300,106 @@
       </el-collapse-item>-->
     </el-collapse>
   </el-card>
+  <el-card>
+    <el-collapse accordion model-value="bscanc">
+      <el-collapse-item title="BscanC Create Order (创建订单)" name="create">
+        <el-container v-loading="createLoadingBscanc">
+          <el-aside width="500px">
+            <el-form
+              ref="createFormBscancRef"
+              :model="createFormBscanc"
+              :rules="createRulesBscanc"
+              label-width="140px"
+            >
+              <el-form-item label="amount (订单金额)" prop="amount">
+                <el-input v-model.number="createFormBscanc.amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label="Merchant order id (商户订单id)" prop="merchant_order_id">
+                <el-input
+                  v-model="createFormBscanc.merchant_order_id"
+                  placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)"
+                />
+              </el-form-item>
+              <el-form-item label="note (备注信息)" prop="note">
+                <el-input v-model="createFormBscanc.note" placeholder="Not required (非必填)" />
+              </el-form-item>
+              <el-form-item label="channel" prop="channel">
+                <el-input v-model="createFormBscanc.channel" placeholder="channel create order" />
+              </el-form-item>
+              <el-form-item label="auth_code" prop="auth_code">
+                <el-input v-model="createFormBscanc.auth_code" placeholder="The Authentication code generated from eWallet of the consumer" />
+              </el-form-item>
+              <el-form-item label="mid" prop="mid">
+                <el-input v-model="createFormBscanc.mid" placeholder="The merchant ID of this order is only valid when there are multiple sub-merchants under the same account." />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="createFormBscancRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="createSubmitBscanc">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="createBscancResult">
+              <div>response:</div>
+              <pre>{{ createBscancResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Bscanc query (查询订单)" name="query">
+        <el-container v-loading="queryLoadingBscanc">
+          <el-aside width="500px">
+            <el-form ref="queryFormBscancRef" :model="queryFormBscanc" :rules="queryRulesBscanc" label-width="140px">
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="queryFormBscanc.order_id" placeholder="queryFormBscanc.order_id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="queryFormBscancRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="querySubmitBscanc">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="queryBscancResult">
+              <div>response:</div>
+              <pre>{{ queryBscancResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <el-collapse-item title="Bscanc refund (发起退款)" name="refund">
+        <el-container v-loading="refundLoadingBscanc">
+          <el-aside width="500px">
+            <el-form
+              ref="refundFormBscancRef"
+              :model="refundFormBscanc"
+              :rules="refundRulesBscanc"
+              label-width="140px"
+            >
+              <el-form-item label="order_id (商户订单id)" prop="order_id">
+                <el-input v-model="refundFormBscanc.order_id" placeholder="Please enter a unique merchant order id (请输入唯一的商户订单id)" />
+              </el-form-item>
+              <el-form-item label="refund_amount (退款金额)" prop="refund_amount">
+                <el-input v-model.number="refundFormBscanc.refund_amount" type="number" min="1" />
+              </el-form-item>
+              <el-form-item label=" ">
+                <el-button type="danger" @click="refundFormBscancRef.resetFields()">reset (重置)</el-button>
+                <el-button type="primary" @click="refundSubmitBscanc">submit (提交)</el-button>
+              </el-form-item>
+            </el-form>
+          </el-aside>
+          <el-main>
+            <template v-if="refundBscancResult">
+              <div>response:</div>
+              <pre>{{ refundBscancResult }}</pre>
+            </template>
+          </el-main>
+        </el-container>
+      </el-collapse-item>
+      <!--<el-collapse-item title="取消订单" name="4">
+      </el-collapse-item>-->
+    </el-collapse>
+  </el-card>
 </div>
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -626,6 +726,111 @@
 
     return state
   }
+  
+    // Bscanc create form 创建订单表单
+    function useCreateFormBscanc() {
+    const state = reactive({
+      createFormBscancRef: null,
+      createLoadingBscanc: false,
+      createFormBscanc: {
+        amount: 1,
+        merchant_order_id: '',
+        auth_code: '',
+        note: '',
+        channel: '',
+        mid: '',
+        timestamp: ''
+      },
+      createRulesBscanc: {
+        amount: [{ required: true, type: 'number' }],
+        merchant_order_id: [{ required: true, type: 'string' }],
+        channel: [{ required: true, type: 'string' }],
+        auth_code: [{ required: true, type: 'string' }]
+      },
+      createBscancResult: null,
+      createSubmitBscanc() {
+        state.createLoadingBscanc = true
+        submit().finally(() => (state.createLoadingBscanc = false))
+      }
+    })
+
+    async function submit() {
+      state.createFormBscanc.timestamp = Date.now().toString()
+
+      await state.createFormBscancRef.validate()
+      state.createBscancResult = await onResponse(
+        await axios.post('/api/bscanc/orderCreate', parseData(state.createFormBscanc))
+      )
+    }
+
+    return state
+  }
+
+  // Bscanc query form 查询订单
+  function useQueryFormBscanc() {
+    const state = reactive({
+      queryFormBscancRef: null,
+      queryLoadingBscanc: false,
+      queryFormBscanc: {
+        order_id: '',
+        timestamp: ''
+      },
+      queryRulesBscanc: {
+        order_id: [{ required: true, type: 'string' }]
+      },
+      queryBscancResult: null,
+      querySubmitBscanc() {
+        state.queryLoadingBscanc = true
+        submit().finally(() => (state.queryLoadingBscanc = false))
+      }
+    })
+
+    async function submit() {
+      state.queryFormBscanc.timestamp = Date.now().toString()
+
+      await state.queryFormBscancRef.validate()
+      state.queryBscancResult = await onResponse(
+        await axios.post('/api/bscanc/orderQuery', parseData(state.queryFormBscanc))
+      )
+    }
+
+    return state
+  }
+
+  // Bscanc refund form 订单退款
+  function useRefundFormBscanc() {
+    const state = reactive({
+      refundFormBscancRef: null,
+      refundLoadingBscanc: false,
+      refundFormBscanc: {
+        order_id: '',
+        refund_amount: 1,
+        timestamp: ''
+      },
+      refundRulesBscanc: {
+        order_id: [{ required: true, type: 'string' }],
+        refund_amount: [{ required: true, type: 'number' }]
+      },
+      refundBscancResult: null,
+      refundSubmitBscanc() {
+        state.refundLoadingBscanc = true
+        submit().finally(() => (state.refundLoadingBscanc = false))
+      }
+    })
+
+    async function submit() {
+      state.refundFormBscanc.timestamp = Date.now().toString()
+
+      await state.refundFormBscancRef.validate()
+      state.refundBscancResult = await onResponse(
+        await axios.post('/api/bscanc/orderRefund', parseData(state.refundFormBscanc))
+      )
+    }
+
+    return state
+  }
+  
+  
   createApp({
     setup() {
       return {
@@ -637,7 +842,10 @@
         ...toRefs(useRefundFormMiniapp()),
         ...toRefs(useCreateFormCscanb()),
         ...toRefs(useQueryFormCscanb()),
-        ...toRefs(useRefundFormCscanb())
+        ...toRefs(useRefundFormCscanb()),
+        ...toRefs(useCreateFormBscanc()),
+        ...toRefs(useQueryFormBscanc()),
+        ...toRefs(useRefundFormBscanc())
       }
     }
   })
