@@ -38,7 +38,7 @@ class PaySDK extends SDK{
    * @param {string} [data.provider]            - 国家或地区
    */
   orderCreate(data) {
-    const url = `${ PaySDK.API }/`
+    const url = `${ PaySDK.API }`
     return axios({
       url: this.host + url,
       method: 'POST',
