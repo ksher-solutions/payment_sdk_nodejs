@@ -1,4 +1,9 @@
 # payment_sdk_nodejs
+
+> Ksher will shut down the API connection via .vip.ksher.net. That make new register merchant will unable to use system over .vip.ksher.net.
+>
+> Merchants are currently connected, Please change the API to connection http://api.ksher.net.
+
 The Payment SDK for accessing *.vip.ksher.net
 
 
